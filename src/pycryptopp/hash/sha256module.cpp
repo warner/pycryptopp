@@ -7,7 +7,7 @@
 #if (PY_VERSION_HEX < 0x02050000)
 typedef int Py_ssize_t;
 #endif
-
+#include "structmember.h"
 #include <assert.h>
 
 /* from Crypto++ */
@@ -28,7 +28,7 @@ static PyObject *sha256_error;
 typedef struct {
     PyObject_HEAD
 
-    Py_ssize_t digest_size;
+    int digest_size;
 
     /* internal */
     CryptoPP::SHA256* h;
@@ -103,7 +103,7 @@ static PyMethodDef SHA256_methods[] = {
 };
 
 static PyMemberDef SHA256_members[] = {
-    {"number", T_PYSSIZET, offsetof(SHA256, digest_size), READONLY, "digest size"},
+    {"digest_size", T_INT, offsetof(SHA256, digest_size), READONLY, "digest size (in bytes)"},
     {NULL}  /* Sentinel */
 };
 
