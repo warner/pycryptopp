@@ -13,6 +13,9 @@ TEST_HKDF_RE=re.compile("\nCOUNT=([0-9]+)\nHASH=([0-9A-Z]+)\nIKM=([0-9a-f]+)\nSA
 
 class HKDFTest(unittest.TestCase):
     def test_HKDF(self):
+	# The test vector is from RFC 5869 (HMAC-based Extract-and-Expand Key
+	# Derivation Function (HKDF))'s Appendix A. Test Vectors
+	# http://tools.ietf.org/html/rfc5869
         curfile = open('../testvectors/HKDFMsg.txt', 'r')
         s = curfile.read()
         print s, "\n"
@@ -22,13 +25,13 @@ class HKDFTest(unittest.TestCase):
         for mo in TEST_HKDF_RE.finditer(vects_str):
             count = int(mo.group(1))
             print "test hdkf: ", count, "\n"
-            hashalg =str(mo.group(2))
+            hashalg = str(mo.group(2))
             if hashalg == "SHA256":
                 print "this is sha256\n"
-                hash=sha256.SHA256
+                hash = sha256.SHA256
             elif hashalg == "SHA1":
                 print "this is sha1\n"
-                hash=hashlib.sha1
+                hash = hashlib.sha1
 
             ikm = a2b_hex(mo.group(3))
             salttmp = mo.group(4)
@@ -38,7 +41,7 @@ class HKDFTest(unittest.TestCase):
                 salt = ""
             else:
                 salt = a2b_hex(salttmp)
-            
+
             infotmp = mo.group(5)
             if infotmp == "zero length":
                 info = ""
@@ -51,10 +54,14 @@ class HKDFTest(unittest.TestCase):
 
             hk = hkdf.new(ikm, l, salt, info, hash)
             computedprk = hk.extract()
-            self.failUnlessEqual(computedprk, prk, "computedprk: %s, prk: %s" % (b2a_hex(computedprk), b2a_hex(prk)))
+            self.failUnlessEqual(computedprk, prk,
+                                 "computedprk: %s, prk: %s" %
+                                 (b2a_hex(computedprk), b2a_hex(prk)))
 
             computedokm = hk.expand()
-            self.failUnlessEqual(computedokm, okm, "computedokm: %s, okm: %s" % (b2a_hex(computedokm), b2a_hex(okm)))
+            self.failUnlessEqual(computedokm, okm,
+                                 "computedokm: %s, okm: %s" %
+                                 (b2a_hex(computedokm), b2a_hex(okm)))
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ import math
 from binascii import a2b_hex, b2a_hex
 
 class HKDF(object):
-    def __init__(self, ikm, L, salt=None, info="", digestmod = None):
+    def __init__(self, ikm, L, salt=None, info="", digestmod=None):
         self.ikm = ikm
         self.keylen = L
 
@@ -44,8 +44,8 @@ class HKDF(object):
             temp = b2a_hex(h.digest())
             i += 1
             T += temp
-       '''
-        while len(T)<self.keylen :
+        '''
+        while len(T) < self.keylen:
             msg = temp
             msg += self.info
             msg += chr(i)
@@ -53,11 +53,9 @@ class HKDF(object):
             temp = h.digest()
             i += 1
             T += temp
-    
+
         self.okm = T[0:self.keylen]
         return self.okm
 
-def new(ikm, L, salt=None, info="", digestmod = None):
-    return HKDF(ikm, L,salt,info,digestmod)
-
-	
+def new(ikm, L, salt=None, info="", digestmod=None):
+    return HKDF(ikm, L, salt, info, digestmod)

@@ -16,7 +16,7 @@ def HKDF_Bench1():
     salt = ""
     hash = sha256.SHA256
     l = 20
-#    hk = hkdf.new(ikm, l, salt, ctxinfo, hash)
+    #hk = hkdf.new(ikm, l, salt, ctxinfo, hash)
     start_time = time.clock()
     for times in xrange(1000):
         ikm = randstr(100)
@@ -69,6 +69,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-    
