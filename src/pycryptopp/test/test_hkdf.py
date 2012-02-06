@@ -16,21 +16,16 @@ class HKDFTest(unittest.TestCase):
 	# The test vector is from RFC 5869 (HMAC-based Extract-and-Expand Key
 	# Derivation Function (HKDF))'s Appendix A. Test Vectors
 	# http://tools.ietf.org/html/rfc5869
-        curfile = open('../testvectors/HKDFMsg.txt', 'r')
-        s = curfile.read()
-        print s, "\n"
+        s = resource_string("pycryptopp", "testvectors/HKDFMsg.txt")
         return self._test_HKDF(s)
 
     def _test_HKDF(self, vects_str):
         for mo in TEST_HKDF_RE.finditer(vects_str):
             count = int(mo.group(1))
-            print "test hdkf: ", count, "\n"
             hashalg = str(mo.group(2))
             if hashalg == "SHA256":
-                print "this is sha256\n"
                 hash = sha256.SHA256
             elif hashalg == "SHA1":
-                print "this is sha1\n"
                 hash = hashlib.sha1
 
             ikm = a2b_hex(mo.group(3))
