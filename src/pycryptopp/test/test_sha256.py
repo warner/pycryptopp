@@ -35,6 +35,11 @@ h_bd = a2b_hex("68325720aabd7c82f30f554b313d0570c95accbb7dc4b5aae11204c08ffe732b
 h_5fd4 = a2b_hex("7c4fbf484498d21b487b9d61de8914b2eadaf2698712936d47c3ada2558f6788")
 
 class SHA256(unittest.TestCase):
+    def test_digest_size(self):
+        self.failUnless(hasattr(sha256.SHA256, 'digest_size'))
+        self.failUnless(isinstance(sha256.SHA256.digest_size, int))
+        self.failUnlessEqual(sha256.SHA256.digest_size, 32)
+
     def test_digest(self):
         empty_digest = sha256.SHA256().digest()
         self.failUnless(isinstance(empty_digest, str))

@@ -28,6 +28,8 @@ static PyObject *sha256_error;
 typedef struct {
     PyObject_HEAD
 
+    Py_ssize_t digest_size;
+
     /* internal */
     CryptoPP::SHA256* h;
     PyStringObject* digest;
@@ -59,7 +61,7 @@ static PyObject *
 SHA256_digest(SHA256* self, PyObject* dummy) {
     if (!self->digest) {
         assert (self->h);
-        self->digest = reinterpret_cast<PyStringObject*>(PyString_FromStringAndSize(NULL, self->h->DigestSize()));
+        self->digest = reinterpret_cast<PyStringObject*>(PyString_FromStringAndSize(NULL, self->digest_size));
         if (!self->digest)
             return NULL;
         self->h->Final(reinterpret_cast<byte*>(PyString_AS_STRING(self->digest)));
@@ -100,6 +102,11 @@ static PyMethodDef SHA256_methods[] = {
     {NULL},
 };
 
+static PyMemberDef SHA256_members[] = {
+    {"number", T_PYSSIZET, offsetof(SHA256, digest_size), READONLY, "digest size"},
+    {NULL}  /* Sentinel */
+};
+
 static PyObject *
 SHA256_new(PyTypeObject* type, PyObject *args, PyObject *kwdict) {
     SHA256* self = reinterpret_cast<SHA256*>(type->tp_alloc(type, 0));
@@ -108,6 +115,7 @@ SHA256_new(PyTypeObject* type, PyObject *args, PyObject *kwdict) {
     self->h = new CryptoPP::SHA256();
     if (!self->h)
         return PyErr_NoMemory();
+    self->digest_size = self->h->DigestSize();
     self->digest = NULL;
     return reinterpret_cast<PyObject*>(self);
 }
@@ -135,8 +143,8 @@ SHA256_init(PyObject* self, PyObject *args, PyObject *kwdict) {
 static PyTypeObject SHA256_type = {
     PyObject_HEAD_INIT(NULL)
     0,                         /*ob_size*/
-    "_sha256.SHA256", /*tp_name*/
-    sizeof(SHA256),             /*tp_basicsize*/
+    "_sha256.SHA256",          /*tp_name*/
+    sizeof(SHA256),            /*tp_basicsize*/
     0,                         /*tp_itemsize*/
     reinterpret_cast<destructor>(SHA256_dealloc), /*tp_dealloc*/
     0,                         /*tp_print*/
@@ -154,15 +162,15 @@ static PyTypeObject SHA256_type = {
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
     Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
-    SHA256__doc__,           /* tp_doc */
+    SHA256__doc__,             /* tp_doc */
     0,		               /* tp_traverse */
     0,		               /* tp_clear */
     0,		               /* tp_richcompare */
     0,		               /* tp_weaklistoffset */
     0,		               /* tp_iter */
     0,		               /* tp_iternext */
-    SHA256_methods,      /* tp_methods */
-    0,                         /* tp_members */
+    SHA256_methods,            /* tp_methods */
+    SHA256_members,            /* tp_members */
     0,                         /* tp_getset */
     0,                         /* tp_base */
     0,                         /* tp_dict */
